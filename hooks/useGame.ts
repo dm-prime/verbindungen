@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "convex/react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import {
@@ -14,6 +15,8 @@ import {
   WORDS_PER_GROUP,
 } from "@/utils/gameLogic";
 import { useUser } from "@/contexts/UserContext";
+
+const GAME_STATE_PREFIX = "verbindungen_game_";
 
 interface Board {
   _id: Id<"boards">;
@@ -40,10 +43,47 @@ interface UseGameResult {
   shuffle: () => void;
 }
 
+// Helper to get storage key for a board
+function getStorageKey(boardId: string): string {
+  return `${GAME_STATE_PREFIX}${boardId}`;
+}
+
+// Save game state to storage
+async function saveGameState(boardId: string, state: GameState): Promise<void> {
+  try {
+    await AsyncStorage.setItem(getStorageKey(boardId), JSON.stringify(state));
+  } catch (error) {
+    console.error("Failed to save game state:", error);
+  }
+}
+
+// Load game state from storage
+async function loadGameState(boardId: string): Promise<GameState | null> {
+  try {
+    const saved = await AsyncStorage.getItem(getStorageKey(boardId));
+    if (saved) {
+      return JSON.parse(saved) as GameState;
+    }
+  } catch (error) {
+    console.error("Failed to load game state:", error);
+  }
+  return null;
+}
+
+// Clear game state from storage
+async function clearGameState(boardId: string): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(getStorageKey(boardId));
+  } catch (error) {
+    console.error("Failed to clear game state:", error);
+  }
+}
+
 export function useGame(boardId: Id<"boards"> | null): UseGameResult {
   const { userId } = useUser();
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [isLoadingState, setIsLoadingState] = useState(true);
+  const initialized = useRef(false);
 
   const board = useQuery(
     api.boards.getBoard,
@@ -62,12 +102,54 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
 
   const recordGame = useMutation(api.gameHistory.recordGame);
 
-  // Initialize game state when board loads
+  // Initialize game state when board loads - check for saved state first
   useEffect(() => {
-    if (board && !hasPlayedQuery) {
-      setGameState(createGameState(board as Board));
+    if (!board || hasPlayedQuery === undefined) return;
+    if (hasPlayedQuery) {
+      setIsLoadingState(false);
+      return;
     }
+
+    // Prevent double initialization
+    if (initialized.current && gameState) return;
+
+    async function initializeGame() {
+      initialized.current = true;
+      
+      // Try to load saved state
+      const savedState = await loadGameState(board!._id);
+      
+      if (savedState && !savedState.isComplete) {
+        // Restore saved state
+        setGameState(savedState);
+      } else {
+        // Create new game
+        setGameState(createGameState(board as Board));
+      }
+      setIsLoadingState(false);
+    }
+
+    initializeGame();
   }, [board, hasPlayedQuery]);
+
+  // Reset initialized ref when board changes
+  useEffect(() => {
+    initialized.current = false;
+    setIsLoadingState(true);
+  }, [boardId]);
+
+  // Save game state whenever it changes (but not on initial load)
+  useEffect(() => {
+    if (gameState && boardId && !isLoadingState) {
+      if (gameState.isComplete) {
+        // Clear saved state when game is complete
+        clearGameState(boardId);
+      } else {
+        // Save current state
+        saveGameState(boardId, gameState);
+      }
+    }
+  }, [gameState, boardId, isLoadingState]);
 
   const selectWord = useCallback((word: string) => {
     setGameState((current) => {
@@ -122,7 +204,7 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
   return {
     gameState,
     board: board as Board | null,
-    isLoading: board === undefined || hasPlayedQuery === undefined,
+    isLoading: board === undefined || hasPlayedQuery === undefined || isLoadingState,
     hasPlayed: hasPlayedQuery ?? false,
     previousResult: previousResultQuery
       ? {

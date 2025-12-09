@@ -1,5 +1,5 @@
-import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 // Get today's date in YYYY-MM-DD format
 function getTodayDate(): string {
@@ -238,7 +238,7 @@ export const seedSampleBoards = mutation({
           { name: "Jahreszeiten", words: ["FRÜHLING", "SOMMER", "HERBST", "WINTER"], difficulty: "easy" as const },
           { name: "Deutsche Flüsse", words: ["RHEIN", "DONAU", "ELBE", "MAIN"], difficulty: "medium" as const },
           { name: "Bundeskanzler", words: ["ADENAUER", "BRANDT", "KOHL", "MERKEL"], difficulty: "hard" as const },
-          { name: "__ BAHN", words: ["AUTO", "EISEN", "RENN", "STRASEN"], difficulty: "very-hard" as const },
+          { name: "__ BAHN", words: ["AUTO", "EISEN", "RENN", "STRASSEN"], difficulty: "very-hard" as const },
         ],
       },
       {

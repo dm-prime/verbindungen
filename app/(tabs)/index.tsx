@@ -1,18 +1,17 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  SafeAreaView,
-  Platform,
-} from "react-native";
-import { useTodaysGame } from "@/hooks/useGame";
 import { GameBoard } from "@/components/game/GameBoard";
 import { GroupDisplay } from "@/components/game/GroupDisplay";
-import { formatDate, MAX_MISTAKES, Group } from "@/utils/gameLogic";
 import { useUser } from "@/contexts/UserContext";
+import { useTodaysGame } from "@/hooks/useGame";
+import { formatDate, Group } from "@/utils/gameLogic";
+import React from "react";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 
 export default function HomeScreen() {
   const { isLoading: userLoading } = useUser();
