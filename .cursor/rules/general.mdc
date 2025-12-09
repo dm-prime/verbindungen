@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+- continuously build and run the project
+- do not stop editing the code until all features are implemented
+- use your cursor built in browser to keep testing all features until they work
+- double check before stopping your iteration
+- recheck readme.md regularly but do not edit it unless a pressing need 
