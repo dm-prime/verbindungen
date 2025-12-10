@@ -85,7 +85,7 @@ export default function HistoryScreen() {
               <View style={styles.gameHeader}>
                 <View style={styles.gameInfo}>
                   <Text style={styles.gameDate}>
-                    {game.board?.date ? formatDate(game.board.date) : "Archivspiel"}
+                    {game.board?.date ? formatDate(game.board.date) : "Zufallsspiel"}
                   </Text>
                   <Text style={styles.playedAt}>
                     Gespielt: {formatTimestamp(game.playedAt)}

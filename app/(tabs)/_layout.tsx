@@ -38,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="random"
         options={{
-          title: "Archiv",
+          title: "Zufall",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="shuffle" color={color} />

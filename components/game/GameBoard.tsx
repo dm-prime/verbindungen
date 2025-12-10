@@ -8,6 +8,7 @@ import {
   Animated,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Link } from "expo-router";
 import { WordTile } from "./WordTile";
 import { GroupDisplay } from "./GroupDisplay";
 import { GameState, Group, WORDS_PER_GROUP, MAX_MISTAKES } from "@/utils/gameLogic";
@@ -19,6 +20,7 @@ interface GameBoardProps {
   onSubmit: () => { success: boolean; isClose: boolean };
   onDeselectAll: () => void;
   onShuffle: () => void;
+  showRandomLink?: boolean;
 }
 
 export function GameBoard({
@@ -28,6 +30,7 @@ export function GameBoard({
   onSubmit,
   onDeselectAll,
   onShuffle,
+  showRandomLink = true,
 }: GameBoardProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const shakeAnim = React.useRef(new Animated.Value(0)).current;
@@ -106,6 +109,13 @@ export function GameBoard({
           <Text style={styles.attemptsText}>
             {gameState.attempts.length} Versuche • {MAX_MISTAKES - gameState.mistakesRemaining} Fehler
           </Text>
+          {showRandomLink && (
+            <Link href="/random" asChild>
+              <Pressable style={styles.randomButton}>
+                <Text style={styles.randomButtonText}>🎲 Zufallsspiel starten</Text>
+              </Pressable>
+            </Link>
+          )}
         </View>
       </View>
     );
@@ -301,5 +311,17 @@ const styles = StyleSheet.create({
   attemptsText: {
     fontSize: 16,
     color: "#666666",
+  },
+  randomButton: {
+    backgroundColor: "#5A594E",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    marginTop: 16,
+  },
+  randomButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

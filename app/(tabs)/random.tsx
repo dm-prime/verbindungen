@@ -45,7 +45,7 @@ export default function RandomScreen() {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyTitle}>Keine Spiele verfügbar</Text>
           <Text style={styles.emptyText}>
-            Du hast alle verfügbaren Archivspiele gespielt! Schau später wieder vorbei.
+            Du hast alle verfügbaren Zufallsspiele gespielt! Schau später wieder vorbei.
           </Text>
         </View>
       </SafeAreaView>
@@ -73,7 +73,7 @@ export default function RandomScreen() {
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <Text style={styles.subtitle}>Archivspiel</Text>
+            <Text style={styles.subtitle}>Zufallsspiel</Text>
             <Text style={styles.title}>Verbindungen</Text>
             <Text style={styles.date}>Veröffentlicht: {formatDate(board.date)}</Text>
           </View>
@@ -102,7 +102,7 @@ export default function RandomScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.subtitle}>Archivspiel</Text>
+          <Text style={styles.subtitle}>Zufallsspiel</Text>
           <Text style={styles.title}>Verbindungen</Text>
           <Text style={styles.date}>Veröffentlicht: {formatDate(board.date)}</Text>
           <Text style={styles.instructions}>

@@ -200,7 +200,7 @@ export function getDifficultyLabel(difficulty: Difficulty): string {
 
 // Format date for display
 export function formatDate(dateString: string | undefined): string {
-  if (!dateString) return "Archiv";
+  if (!dateString) return "Zufall";
   
   const date = new Date(dateString);
   return date.toLocaleDateString("de-DE", {
