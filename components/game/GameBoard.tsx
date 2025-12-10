@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Platform,
-  Animated,
-} from "react-native";
+import { GameState, Group, MAX_MISTAKES, WORDS_PER_GROUP } from "@/utils/gameLogic";
 import * as Haptics from "expo-haptics";
 import { Link } from "expo-router";
-import { WordTile } from "./WordTile";
+import React, { useState } from "react";
+import {
+    Animated,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import { GroupDisplay } from "./GroupDisplay";
-import { GameState, Group, WORDS_PER_GROUP, MAX_MISTAKES } from "@/utils/gameLogic";
+import { WordTile } from "./WordTile";
 
 interface GameBoardProps {
   gameState: GameState;

@@ -6,13 +6,13 @@ import { formatDate, Group } from "@/utils/gameLogic";
 import { Link } from "expo-router";
 import React from "react";
 import {
-  ActivityIndicator,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from "react-native";
 
 export default function HomeScreen() {

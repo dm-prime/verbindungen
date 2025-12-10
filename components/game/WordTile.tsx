@@ -7,6 +7,7 @@ import {
   Platform,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { hyphenateWord, webHyphenationStyle } from "@/utils/hyphenation";
 
 interface WordTileProps {
   word: string;
@@ -69,12 +70,15 @@ export function WordTile({
             styles.text,
             isSelected && styles.selectedText,
             isDisabled && styles.disabledText,
+            Platform.OS === "web" && webHyphenationStyle,
           ]}
           numberOfLines={2}
           adjustsFontSizeToFit
           minimumFontScale={0.5}
+          // @ts-ignore - lang is valid for web accessibility
+          lang="de"
         >
-          {word}
+          {Platform.OS === "web" ? word : hyphenateWord(word)}
         </Text>
       </Pressable>
     </Animated.View>

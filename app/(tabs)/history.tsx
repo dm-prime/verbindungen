@@ -1,17 +1,18 @@
+import { useUser } from "@/contexts/UserContext";
+import { api } from "@/convex/_generated/api";
+import { formatDate, formatTimestamp } from "@/utils/gameLogic";
+import { useQuery } from "convex/react";
+import { Link } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
   ActivityIndicator,
-  SafeAreaView,
   Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useUser } from "@/contexts/UserContext";
-import { formatDate, formatTimestamp, getDifficultyColor } from "@/utils/gameLogic";
 
 export default function HistoryScreen() {
   const { userId, isLoading: userLoading } = useUser();
@@ -81,51 +82,36 @@ export default function HistoryScreen() {
         {/* Game list */}
         <View style={styles.listContainer}>
           {history.map((game) => (
-            <View key={game._id} style={styles.gameCard}>
-              <View style={styles.gameHeader}>
-                <View style={styles.gameInfo}>
-                  <Text style={styles.gameDate}>
-                    {game.board?.date ? formatDate(game.board.date) : "Zufallsspiel"}
-                  </Text>
-                  <Text style={styles.playedAt}>
-                    Gespielt: {formatTimestamp(game.playedAt)}
-                  </Text>
+            <Link
+              key={game._id}
+              href={`/game/${game.boardId}`}
+              asChild
+            >
+              <Pressable style={styles.gameCard}>
+                <View style={styles.gameHeader}>
+                  <View style={styles.gameInfo}>
+                    <Text style={styles.gameDate}>
+                      {game.board?.date ? formatDate(game.board.date) : "Zufallsspiel"}
+                    </Text>
+                    <Text style={styles.playedAt}>
+                      Gespielt: {formatTimestamp(game.playedAt)}
+                    </Text>
+                  </View>
+                  <View style={[styles.resultBadge, game.won ? styles.winBadge : styles.loseBadge]}>
+                    <Text style={[styles.resultBadgeText, game.won ? styles.winBadgeText : styles.loseBadgeText]}>
+                      {game.won ? "Gewonnen" : "Verloren"}
+                    </Text>
+                  </View>
                 </View>
-                <View style={[styles.resultBadge, game.won ? styles.winBadge : styles.loseBadge]}>
-                  <Text style={[styles.resultBadgeText, game.won ? styles.winBadgeText : styles.loseBadgeText]}>
-                    {game.won ? "Gewonnen" : "Verloren"}
-                  </Text>
-                </View>
-              </View>
 
-              {/* Groups preview */}
-              {game.board?.groups && (
-                <View style={styles.groupsPreview}>
-                  {game.board.groups
-                    .sort((a, b) => {
-                      const order = { easy: 0, medium: 1, hard: 2, "very-hard": 3 };
-                      return order[a.difficulty as keyof typeof order] - order[b.difficulty as keyof typeof order];
-                    })
-                    .map((group) => (
-                      <View
-                        key={group.name}
-                        style={[
-                          styles.groupPill,
-                          { backgroundColor: getDifficultyColor(group.difficulty as any) },
-                        ]}
-                      >
-                        <Text style={styles.groupPillText}>{group.name}</Text>
-                      </View>
-                    ))}
+                <View style={styles.gameFooter}>
+                  <Text style={styles.attemptsText}>
+                    {game.attempts} Versuche
+                  </Text>
+                  <Text style={styles.viewDetails}>Details anzeigen →</Text>
                 </View>
-              )}
-
-              <View style={styles.gameFooter}>
-                <Text style={styles.attemptsText}>
-                  {game.attempts} Versuche
-                </Text>
-              </View>
-            </View>
+              </Pressable>
+            </Link>
           ))}
         </View>
       </ScrollView>
@@ -265,30 +251,21 @@ const styles = StyleSheet.create({
   loseBadgeText: {
     color: "#721C24",
   },
-  groupsPreview: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginBottom: 12,
-  },
-  groupPill: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-  },
-  groupPillText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    textTransform: "uppercase",
-  },
   gameFooter: {
     borderTopWidth: 1,
     borderTopColor: "#F0F0F0",
     paddingTop: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   attemptsText: {
     fontSize: 12,
     color: "#666666",
+  },
+  viewDetails: {
+    fontSize: 12,
+    color: "#5A594E",
+    fontWeight: "600",
   },
 });

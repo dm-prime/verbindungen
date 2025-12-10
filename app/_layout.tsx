@@ -4,10 +4,10 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import { AdminProvider } from "@/contexts/AdminContext";
+import { UserProvider } from "@/contexts/UserContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { convex } from "@/lib/convex";
-import { UserProvider } from "@/contexts/UserContext";
-import { AdminProvider } from "@/contexts/AdminContext";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -23,6 +23,7 @@ export default function RootLayout() {
           <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="game" options={{ headerShown: false }} />
               <Stack.Screen name="admin" options={{ headerShown: false }} />
               <Stack.Screen
                 name="modal"

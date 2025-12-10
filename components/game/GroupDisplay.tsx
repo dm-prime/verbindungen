@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Animated, Platform } from "react-native";
 import { Group, getDifficultyColor } from "@/utils/gameLogic";
+import { hyphenateWord, webHyphenationStyle } from "@/utils/hyphenation";
 
 interface GroupDisplayProps {
   group: Group;
@@ -43,8 +44,22 @@ export function GroupDisplay({ group, animationDelay = 0 }: GroupDisplayProps) {
         },
       ]}
     >
-      <Text style={styles.name}>{group.name}</Text>
-      <Text style={styles.words}>{group.words.join(", ")}</Text>
+      <Text 
+        style={[styles.name, Platform.OS === "web" && webHyphenationStyle]}
+        // @ts-ignore - lang is valid for web accessibility
+        lang="de"
+      >
+        {Platform.OS === "web" ? group.name : hyphenateWord(group.name)}
+      </Text>
+      <Text 
+        style={[styles.words, Platform.OS === "web" && webHyphenationStyle]}
+        // @ts-ignore - lang is valid for web accessibility
+        lang="de"
+      >
+        {Platform.OS === "web" 
+          ? group.words.join(", ") 
+          : group.words.map(w => hyphenateWord(w)).join(", ")}
+      </Text>
     </Animated.View>
   );
 }
