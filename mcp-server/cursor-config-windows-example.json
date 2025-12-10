@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "convex-boards": {
+      "command": "node",
+      "args": ["C:\\Users\\muellerd\\source\\repos-side\\verbindungen\\mcp-server\\index.mjs"],
+      "env": {
+        "CONVEX_URL": "https://your-deployment.convex.cloud"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "convex-boards": {
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-server/index.mjs"],
+      "env": {
+        "CONVEX_URL": ""
+      }
+    }
+  }
+}
