@@ -122,6 +122,7 @@ export default function BoardsScreen() {
                     <Text style={styles.boardDate}>
                       {board.date ? formatDate(board.date) : "Kein Datum"}
                     </Text>
+                    <Text style={styles.boardId}>ID: {board._id}</Text>
                     <View style={styles.badgeRow}>
                       {board.isPastPool && (
                         <View style={styles.poolBadge}>
@@ -136,6 +137,14 @@ export default function BoardsScreen() {
                     </View>
                   </View>
                   <View style={styles.cardActions}>
+                    <Pressable
+                      style={styles.testPlayButton}
+                      onPress={() =>
+                        router.push(`/game/test/${board._id}`)
+                      }
+                    >
+                      <Text style={styles.testPlayButtonText}>Testen</Text>
+                    </Pressable>
                     <Pressable
                       style={styles.editButton}
                       onPress={() =>
@@ -161,16 +170,25 @@ export default function BoardsScreen() {
                   </View>
                 </View>
 
-                <View style={styles.groupsPreview}>
+                <View style={styles.solutionContainer}>
                   {board.groups.map((group) => (
                     <View
                       key={group.name}
-                      style={[
-                        styles.groupPill,
-                        { backgroundColor: getDifficultyColor(group.difficulty) },
-                      ]}
+                      style={styles.solutionGroup}
                     >
-                      <Text style={styles.groupPillText}>{group.name}</Text>
+                      <View
+                        style={[
+                          styles.groupHeader,
+                          { backgroundColor: getDifficultyColor(group.difficulty) },
+                        ]}
+                      >
+                        <Text style={styles.groupHeaderText}>{group.name}</Text>
+                      </View>
+                      <View style={styles.groupWords}>
+                        <Text style={styles.wordText}>
+                          {group.words.join(" • ")}
+                        </Text>
+                      </View>
                     </View>
                   ))}
                 </View>
@@ -277,6 +295,12 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginBottom: 4,
   },
+  boardId: {
+    fontSize: 11,
+    color: "#666666",
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+    marginBottom: 4,
+  },
   badgeRow: {
     flexDirection: "row",
     gap: 8,
@@ -307,6 +331,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  testPlayButton: {
+    backgroundColor: "#2A4A2A",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  testPlayButtonText: {
+    color: "#7BC67B",
+    fontSize: 12,
+    fontWeight: "600",
+  },
   editButton: {
     backgroundColor: "#2A2A2A",
     paddingVertical: 6,
@@ -331,21 +366,36 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  groupsPreview: {
+  solutionContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 8,
+    marginTop: 4,
   },
-  groupPill: {
+  solutionGroup: {
+    gap: 4,
+    width: "48%",
+    minWidth: 140,
+  },
+  groupHeader: {
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
+    alignSelf: "flex-start",
   },
-  groupPillText: {
+  groupHeaderText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#1A1A1A",
     textTransform: "uppercase",
+  },
+  groupWords: {
+    paddingLeft: 4,
+  },
+  wordText: {
+    fontSize: 13,
+    color: "#CCCCCC",
+    lineHeight: 20,
   },
 });
 

@@ -196,54 +196,56 @@ export default function BoardEditorScreen() {
       </View>
 
       {/* Groups */}
-      {groups.map((group, groupIndex) => (
-        <View
-          key={groupIndex}
-          style={[
-            styles.groupCard,
-            { borderLeftColor: getDifficultyColor(group.difficulty) },
-          ]}
-        >
-          <View style={styles.groupHeader}>
-            <View
-              style={[
-                styles.difficultyBadge,
-                { backgroundColor: getDifficultyColor(group.difficulty) },
-              ]}
-            >
-              <Text style={styles.difficultyBadgeText}>
-                {getDifficultyLabel(group.difficulty)}
-              </Text>
+      <View style={styles.groupsGrid}>
+        {groups.map((group, groupIndex) => (
+          <View
+            key={groupIndex}
+            style={[
+              styles.groupCard,
+              { borderLeftColor: getDifficultyColor(group.difficulty) },
+            ]}
+          >
+            <View style={styles.groupHeader}>
+              <View
+                style={[
+                  styles.difficultyBadge,
+                  { backgroundColor: getDifficultyColor(group.difficulty) },
+                ]}
+              >
+                <Text style={styles.difficultyBadgeText}>
+                  {getDifficultyLabel(group.difficulty)}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.inputLabel}>Gruppenname</Text>
+            <TextInput
+              style={styles.input}
+              value={group.name}
+              onChangeText={(value) => updateGroup(groupIndex, "name", value)}
+              placeholder="z.B. Deutsche Städte"
+              placeholderTextColor="#666666"
+            />
+
+            <Text style={styles.inputLabel}>Wörter (4 Stück)</Text>
+            <View style={styles.wordsGrid}>
+              {group.words.map((word, wordIndex) => (
+                <TextInput
+                  key={wordIndex}
+                  style={styles.wordInput}
+                  value={word}
+                  onChangeText={(value) =>
+                    updateGroupWord(groupIndex, wordIndex, value)
+                  }
+                  placeholder={`Wort ${wordIndex + 1}`}
+                  placeholderTextColor="#666666"
+                  autoCapitalize="characters"
+                />
+              ))}
             </View>
           </View>
-
-          <Text style={styles.inputLabel}>Gruppenname</Text>
-          <TextInput
-            style={styles.input}
-            value={group.name}
-            onChangeText={(value) => updateGroup(groupIndex, "name", value)}
-            placeholder="z.B. Deutsche Städte"
-            placeholderTextColor="#666666"
-          />
-
-          <Text style={styles.inputLabel}>Wörter (4 Stück)</Text>
-          <View style={styles.wordsGrid}>
-            {group.words.map((word, wordIndex) => (
-              <TextInput
-                key={wordIndex}
-                style={styles.wordInput}
-                value={word}
-                onChangeText={(value) =>
-                  updateGroupWord(groupIndex, wordIndex, value)
-                }
-                placeholder={`Wort ${wordIndex + 1}`}
-                placeholderTextColor="#666666"
-                autoCapitalize="characters"
-              />
-            ))}
-          </View>
-        </View>
-      ))}
+        ))}
+      </View>
 
       {/* Error message */}
       {error && (
@@ -329,12 +331,19 @@ const styles = StyleSheet.create({
     color: "#666666",
     marginTop: 2,
   },
+  groupsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 16,
+  },
   groupCard: {
     backgroundColor: "#1E1E1E",
     borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
     borderLeftWidth: 4,
+    width: "48%",
+    minWidth: 160,
   },
   groupHeader: {
     marginBottom: 16,

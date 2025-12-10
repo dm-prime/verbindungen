@@ -79,7 +79,7 @@ async function clearGameState(boardId: string): Promise<void> {
   }
 }
 
-export function useGame(boardId: Id<"boards"> | null): UseGameResult {
+export function useGame(boardId: Id<"boards"> | null, testMode: boolean = false): UseGameResult {
   const { userId } = useUser();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [isLoadingState, setIsLoadingState] = useState(true);
@@ -104,8 +104,11 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
 
   // Initialize game state when board loads - check for saved state first
   useEffect(() => {
-    if (!board || hasPlayedQuery === undefined) return;
-    if (hasPlayedQuery) {
+    if (!board) return;
+    
+    // In test mode, skip checking hasPlayedQuery
+    if (!testMode && hasPlayedQuery === undefined) return;
+    if (!testMode && hasPlayedQuery) {
       setIsLoadingState(false);
       return;
     }
@@ -116,21 +119,26 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
     async function initializeGame() {
       initialized.current = true;
       
-      // Try to load saved state
-      const savedState = await loadGameState(board!._id);
-      
-      if (savedState && !savedState.isComplete) {
-        // Restore saved state
-        setGameState(savedState);
-      } else {
-        // Create new game
+      if (testMode) {
+        // In test mode, always create a fresh game state
         setGameState(createGameState(board as Board));
+      } else {
+        // Try to load saved state
+        const savedState = await loadGameState(board!._id);
+        
+        if (savedState && !savedState.isComplete) {
+          // Restore saved state
+          setGameState(savedState);
+        } else {
+          // Create new game
+          setGameState(createGameState(board as Board));
+        }
       }
       setIsLoadingState(false);
     }
 
     initializeGame();
-  }, [board, hasPlayedQuery]);
+  }, [board, hasPlayedQuery, testMode]);
 
   // Reset initialized ref when board changes
   useEffect(() => {
@@ -140,6 +148,9 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
 
   // Save game state whenever it changes (but not on initial load)
   useEffect(() => {
+    // Skip persistence in test mode
+    if (testMode) return;
+    
     if (gameState && boardId && !isLoadingState) {
       if (gameState.isComplete) {
         // Clear saved state when game is complete
@@ -149,7 +160,7 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
         saveGameState(boardId, gameState);
       }
     }
-  }, [gameState, boardId, isLoadingState]);
+  }, [gameState, boardId, isLoadingState, testMode]);
 
   const selectWord = useCallback((word: string) => {
     setGameState((current) => {
@@ -173,8 +184,8 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
     const newState = processGuess(gameState, board.groups as Group[]);
     setGameState(newState);
 
-    // Save game when complete
-    if (newState.isComplete && userId) {
+    // Save game when complete (skip in test mode)
+    if (newState.isComplete && userId && !testMode) {
       recordGame({
         userId,
         boardId: board._id,
@@ -204,15 +215,15 @@ export function useGame(boardId: Id<"boards"> | null): UseGameResult {
   return {
     gameState,
     board: board as Board | null,
-    isLoading: board === undefined || hasPlayedQuery === undefined || isLoadingState,
-    hasPlayed: hasPlayedQuery ?? false,
-    previousResult: previousResultQuery
+    isLoading: board === undefined || (!testMode && hasPlayedQuery === undefined) || isLoadingState,
+    hasPlayed: testMode ? false : (hasPlayedQuery ?? false),
+    previousResult: testMode ? null : (previousResultQuery
       ? {
           won: previousResultQuery.won,
           attempts: previousResultQuery.attempts,
           selectedGroups: previousResultQuery.selectedGroups,
         }
-      : null,
+      : null),
     selectWord,
     submitGuess,
     deselectAll,

@@ -14,11 +14,11 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "../convex/_generated/api.js";
-import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
+import { existsSync, readFileSync } from "fs";
 import { dirname, join } from "path";
-import { existsSync } from "fs";
+import { fileURLToPath } from "url";
+import { api } from "../convex/_generated/api.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -129,6 +129,20 @@ class ConvexBoardsServer {
               boardId: {
                 type: "string",
                 description: "The ID of the board to retrieve",
+              },
+            },
+            required: ["boardId"],
+          },
+        },
+        {
+          name: "get_board_words_testplay",
+          description: "Get only the words for a board (without the solution/groups)",
+          inputSchema: {
+            type: "object",
+            properties: {
+              boardId: {
+                type: "string",
+                description: "The ID of the board to retrieve words from",
               },
             },
             required: ["boardId"],
@@ -288,6 +302,32 @@ class ConvexBoardsServer {
             const result = await convex.query(api.boards.getBoard, {
               boardId: args.boardId,
             });
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify(result, null, 2),
+                },
+              ],
+            };
+          }
+
+          case "get_board_words_testplay": {
+            if (!args.boardId) {
+              throw new Error("boardId is required");
+            }
+            const board = await convex.query(api.boards.getBoard, {
+              boardId: args.boardId,
+            });
+            if (!board) {
+              throw new Error("Board not found");
+            }
+            // Return only words, without groups/solution
+            const result = {
+              boardId: board._id,
+              words: board.words,
+              date: board.date,
+            };
             return {
               content: [
                 {

@@ -115,13 +115,13 @@ export function processGuess(
       attempts: newAttempts,
     };
   } else {
-    // Wrong guess
+    // Wrong guess - keep words selected so user can try again
     const newMistakes = mistakesRemaining - 1;
     const isComplete = newMistakes === 0;
 
     return {
       ...state,
-      selectedWords: [],
+      // Keep selectedWords from state (don't clear them)
       mistakesRemaining: newMistakes,
       isComplete,
       won: false,
